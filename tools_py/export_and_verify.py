@@ -69,7 +69,7 @@ def load_checkpoint(weights_path: Path, device: torch.device, allow_unsafe_load:
         return torch.load(weights_path, **load_kwargs)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Export a Faster R-CNN model to ONNX and verify outputs."
     )
@@ -178,7 +178,7 @@ def main():
         print("Config validation failed:")
         for message in errors:
             print(f"  - {message}")
-        return
+        return 1
 
     weights_dir = (
         Path(args.weights_dir)
@@ -195,7 +195,7 @@ def main():
         weights_path = resolve_weights_path(weights_dir)
     except FileNotFoundError as exc:
         print(f"Error: {exc}")
-        return
+        return 1
 
     device = torch.device("cpu")
 
@@ -206,7 +206,7 @@ def main():
         checkpoint = load_checkpoint(weights_path, device, allow_unsafe_load)
     except RuntimeError as exc:
         print(f"Error: {exc}")
-        return
+        return 1
     if isinstance(checkpoint, dict) and "model" in checkpoint:
         model.load_state_dict(checkpoint["model"])
     elif isinstance(checkpoint, dict):
@@ -268,7 +268,10 @@ def main():
     except AssertionError as e:
         print("FAILURE: Outputs do not match.")
         print(e)
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

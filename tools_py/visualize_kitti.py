@@ -83,6 +83,12 @@ def main():
         default=None,
         help="Number of random samples to visualize (<=0 uses all).",
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Random seed used when sampling images.",
+    )
     args = parser.parse_args()
 
     config_path = args.config if args.config else None
@@ -134,6 +140,11 @@ def main():
             errors.append(
                 "Missing business parameter: num_samples. Set [visualize_kitti].num_samples."
             )
+    seed = (
+        args.seed
+        if args.seed is not None
+        else cfg_get(cfg, section, "seed", int, 42)
+    )
 
     if errors:
         message = "Config validation failed:\n" + "\n".join(
@@ -161,7 +172,8 @@ def main():
     if num_samples <= 0:
         samples = image_files
     else:
-        samples = random.sample(image_files, min(num_samples, len(image_files)))
+        rng = random.Random(seed)
+        samples = rng.sample(image_files, min(num_samples, len(image_files)))
 
     print(f"Found {len(image_files)} images, processing {len(samples)} sample(s).")
 

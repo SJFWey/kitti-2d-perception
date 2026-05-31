@@ -129,8 +129,9 @@ int main(int argc, char **argv)
     const fs::path input_path = input_resolver::resolve_input_path(options);
     if (input_path.empty() || !fs::exists(input_path))
     {
-        std::cerr << "Input path not found: " << options.input_path
-                  << ". Use --input to point to an image or directory." << "\n";
+        std::cerr << "Input path not found for input '" << options.input_path
+                  << "' and sequence '" << options.sequence_id
+                  << "'. Use --input to point to an image or directory." << "\n";
         return 1;
     }
 

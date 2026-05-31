@@ -9,7 +9,10 @@ dependencies:
   - opencv=4.10
   - onnx=1.16
   - onnxruntime=1.18.1
+  - matplotlib
   - pytorch=2.4
+  - requests
   - torchvision=0.19
+  - tqdm
   - cpuonly
   - pip

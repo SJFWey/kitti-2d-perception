@@ -136,6 +136,7 @@ std::filesystem::path resolve_input_path(const app_config::AppOptions &options)
                 return normalized_path;
             }
         }
+        return {};
     }
 
     return sequence_dirs.front();
@@ -180,7 +181,14 @@ int parse_frame_id(const std::filesystem::path &image_path, int fallback)
     std::string stem = image_path.stem().string();
     if (is_numeric_string(stem))
     {
-        return std::stoi(stem);
+        try
+        {
+            return std::stoi(stem);
+        }
+        catch (const std::exception &)
+        {
+            return fallback;
+        }
     }
     return fallback;
 }

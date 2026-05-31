@@ -6,6 +6,16 @@ End-to-end 2D perception pipeline for KITTI-style data:
 - **Tracking** via SORT (C++)
 - **Visualization** utilities
 
+## Demo videos
+
+https://github.com/user-attachments/assets/d57ef21b-0b4c-4281-894c-2eadc693ad13
+
+
+https://github.com/user-attachments/assets/9c1e1761-9595-4ce1-9084-23099b4c365d
+
+
+https://github.com/user-attachments/assets/53a764a4-bcd8-4760-802e-4b5276a78ab0
+
 This repo is designed for experimentation. Datasets and model weights are
 **not** included and must be provided by you.
 
@@ -111,13 +121,6 @@ cmake --build build -j
 ### Option B: Use the bundled layout (if you provide it)
 If you keep ONNX Runtime under `third_party/onnxruntime`, CMake will auto-detect it.
 
-### CMake Presets (optional)
-If you vendor dependencies under `third_party/`, you can use the default preset:
-```bash
-cmake --preset default
-cmake --build --preset default -j
-```
-
 ### Required header-only deps (CLI11)
 CLI11 is not vendored in this repo. Provide it via `third_party/cli11`
 or point CMake to a local checkout:
@@ -132,7 +135,7 @@ cmake -S . -B build \
 
 ## Running the C++ App
 ```bash
-./build/perception2d_app
+./build/perception2d_app --sequence 0000
 ```
 Required parameter: `sequence_id` (set via CLI flags or config).
 Defaults for `input_path` and `model_path` are derived from `[paths]` in `configs/public/default.ini`.
@@ -172,7 +175,18 @@ You can also supply `--config` to pull defaults from a custom INI file.
 ```bash
 python tools_py/visualize_kitti.py --data-root /path/to/{kitti_detection_root}
 ```
-Defaults can be configured via `configs/public/default.ini`.
+Defaults, including the sampling seed, can be configured via `configs/public/default.ini`.
+
+### Local Training and TrackEval Helpers
+Run these helper scripts from the repository root so they can resolve `configs/` and
+local paths consistently:
+```bash
+uv run python local_tools/train_v1.py --config configs/local/local_tools.ini
+uv run python local_tools/train_v2.py --config configs/local/local_tools.ini
+uv run python local_tools/prepare_trackeval_kitti.py --config configs/local/local_tools.ini
+```
+Defaults for these scripts live in `configs/local/local_tools.ini`, with CLI flags
+taking priority.
 
 ## Dataset Expectations
 - **Tracking** input: a folder of images or a single image.

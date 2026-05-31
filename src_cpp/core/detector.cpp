@@ -3,7 +3,42 @@
 #include <iostream>
 #include <stdexcept>
 #include <thread>
+
 #include <opencv2/dnn/dnn.hpp>
+
+namespace
+{
+size_t validated_detection_count(std::vector<Ort::Value> &output_tensors)
+{
+    if (output_tensors.size() < 3)
+    {
+        throw std::runtime_error("Detector2D expected 3 outputs but received fewer.");
+    }
+
+    const auto boxes_shape = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
+    const auto labels_shape = output_tensors[1].GetTensorTypeAndShapeInfo().GetShape();
+    const auto scores_shape = output_tensors[2].GetTensorTypeAndShapeInfo().GetShape();
+
+    if (boxes_shape.size() != 2 || boxes_shape[1] != 4)
+    {
+        throw std::runtime_error("Detector2D boxes output must have shape [N, 4].");
+    }
+    if (labels_shape.size() != 1 || scores_shape.size() != 1)
+    {
+        throw std::runtime_error("Detector2D labels and scores outputs must have shape [N].");
+    }
+    if (boxes_shape[0] < 0 || labels_shape[0] < 0 || scores_shape[0] < 0)
+    {
+        throw std::runtime_error("Detector2D outputs must have concrete runtime shapes.");
+    }
+    if (boxes_shape[0] != labels_shape[0] || labels_shape[0] != scores_shape[0])
+    {
+        throw std::runtime_error("Detector2D output tensor lengths do not match.");
+    }
+
+    return static_cast<size_t>(labels_shape[0]);
+}
+} // namespace
 
 Detector2D::Detector2D(
     const std::string &model_path,
@@ -158,18 +193,14 @@ std::vector<Detection> Detector2D::infer(const cv::Mat &image)
         input_name_ptrs_.data(), &input_tensor, input_name_ptrs_.size(),
         output_name_ptrs_.data(), output_name_ptrs_.size());
 
-    if (output_tensors.size() < 3)
-    {
-        throw std::runtime_error("Detector2D expected 3 outputs but received fewer.");
-    }
+    const size_t num_detections = validated_detection_count(output_tensors);
 
     float *float_boxes = output_tensors[0].GetTensorMutableData<float>();
     int64_t *int_labels = output_tensors[1].GetTensorMutableData<int64_t>();
     float *float_scores = output_tensors[2].GetTensorMutableData<float>();
 
-    size_t num_detections = output_tensors[1].GetTensorTypeAndShapeInfo().GetShape()[0];
-
     std::vector<Detection> results;
+    results.reserve(num_detections);
     float x_scale = static_cast<float>(image.cols) / static_cast<float>(input_width);
     float y_scale = static_cast<float>(image.rows) / static_cast<float>(input_height);
 

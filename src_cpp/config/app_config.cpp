@@ -63,18 +63,22 @@ bool parse_bool(const std::string &value, bool &out)
     return false;
 }
 
-std::vector<int> parse_int_list(const std::string &value)
+bool parse_int_list(const std::string &value, std::vector<int> &out)
 {
     std::string normalized = value;
     std::replace(normalized.begin(), normalized.end(), ',', ' ');
     std::stringstream ss(normalized);
-    std::vector<int> out;
-    int v = 0;
-    while (ss >> v)
+    std::string token;
+    while (ss >> token)
     {
-        out.push_back(v);
+        int parsed = 0;
+        if (!parse_int(token, parsed))
+        {
+            return false;
+        }
+        out.push_back(parsed);
     }
-    return out;
+    return true;
 }
 
 bool read_config_int(const ini::IniConfig &config,
@@ -219,7 +223,13 @@ bool apply_config(const ini::IniConfig &config,
     }
     if (ini::get_string(config, app_section, "class_ids", cfg_value))
     {
-        auto parsed = parse_int_list(cfg_value);
+        std::vector<int> parsed;
+        if (!parse_int_list(cfg_value, parsed))
+        {
+            std::cerr << "Invalid config value for " << app_section
+                      << ".class_ids: " << cfg_value << "\n";
+            return false;
+        }
         if (!parsed.empty())
         {
             options.class_ids = parsed;
