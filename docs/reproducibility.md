@@ -52,15 +52,15 @@ three foreground classes:
 3 = Cyclist
 ```
 
-The trained checkpoint should be placed at:
+The notebook now writes its best checkpoint directly to:
 
 ```text
 weights/best_model.pth
 ```
 
 Training was originally run in Colab, so exact wall-clock time and GPU behavior
-depend on the runtime. Keep checkpoints under `weights/`, which is ignored by
-Git.
+depend on the runtime. Training history and plots are written to
+`output/train_v2/`. Both locations are ignored by Git.
 
 ## 4. Export ONNX
 
@@ -142,22 +142,25 @@ output/0011/
 compressed presentation assets generated from local runs, not full output
 archives.
 
-## 7. TrackEval Reporting
+## 7. Archived TrackEval Reporting
 
-The public repository includes result screenshots and tables in
-`result_examples/`. Full TrackEval reproduction requires local KITTI tracking
-ground truth and helper tooling that is kept outside the public release surface.
+The repository includes screenshots and tables from an older local run on
+sequences 0011, 0012, and 0013. The exact checkpoint digest, TrackEval revision,
+and conversion script were not preserved. These files are historical artifacts,
+not reproducible or official KITTI benchmark results.
 
-Use the existing CSV outputs as the stable boundary:
+The C++ application currently produces this project-local boundary:
 
 ```text
 detections.csv
 tracks.csv
 ```
 
-When reporting metrics, include the evaluated sequences, model checkpoint,
-score threshold, tracker settings, and whether the result is from a local or
-published run.
+These CSV files still require a benchmark-specific conversion step before
+TrackEval. Any future reported run should commit or document that conversion and
+include the evaluated sequences, model checkpoint SHA-256, score threshold,
+tracker settings, TrackEval commit, and exact command. See
+[evaluation_protocol.md](evaluation_protocol.md).
 
 ## 8. Verification
 

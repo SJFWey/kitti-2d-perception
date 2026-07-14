@@ -1,0 +1,26 @@
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Local datasets, checkpoints, exported models, and generated outputs
+data/
+weights/
+models/
+output/
+outputs/
+
+# Native build products and local third-party packages
+build/
+cmake-build-*/
+third_party/
+
+# Editor and OS metadata
+.idea/
+.vscode/
+.DS_Store

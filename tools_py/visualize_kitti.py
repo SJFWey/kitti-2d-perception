@@ -138,7 +138,7 @@ def main():
         num_samples = cfg_get(cfg, section, "num_samples", int, None)
         if num_samples is None:
             errors.append(
-                "Missing business parameter: num_samples. Set [visualize_kitti].num_samples."
+                "Missing runtime parameter: num_samples. Set [visualize_kitti].num_samples."
             )
     seed = (
         args.seed

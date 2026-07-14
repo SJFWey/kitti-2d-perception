@@ -289,7 +289,7 @@ std::vector<std::string> validate_options(const AppOptions &options)
     }
     if (options.score_threshold == kUnsetFloat)
     {
-        add_error("Missing business parameter: score_threshold. Set --score-threshold or [perception2d_app].score_threshold.");
+        add_error("Missing runtime parameter: score_threshold. Set --score-threshold or [perception2d_app].score_threshold.");
     }
     else if (options.score_threshold < 0.0f || options.score_threshold > 1.0f)
     {
@@ -297,7 +297,7 @@ std::vector<std::string> validate_options(const AppOptions &options)
     }
     if (options.input_height == kUnsetInt)
     {
-        add_error("Missing business parameter: input_height. Set [perception2d_app].input_height.");
+        add_error("Missing runtime parameter: input_height. Set [perception2d_app].input_height.");
     }
     else if (options.input_height <= 0)
     {
@@ -305,7 +305,7 @@ std::vector<std::string> validate_options(const AppOptions &options)
     }
     if (options.input_width == kUnsetInt)
     {
-        add_error("Missing business parameter: input_width. Set [perception2d_app].input_width.");
+        add_error("Missing runtime parameter: input_width. Set [perception2d_app].input_width.");
     }
     else if (options.input_width <= 0)
     {
@@ -313,7 +313,7 @@ std::vector<std::string> validate_options(const AppOptions &options)
     }
     if (options.class_ids.empty())
     {
-        add_error("Missing business parameter: class_ids. Set [perception2d_app].class_ids.");
+        add_error("Missing runtime parameter: class_ids. Set [perception2d_app].class_ids.");
     }
     else
     {
@@ -328,7 +328,7 @@ std::vector<std::string> validate_options(const AppOptions &options)
     }
     if (options.max_frames == kUnsetMaxFrames)
     {
-        add_error("Missing business parameter: max_frames. Set --max-frames or [perception2d_app].max_frames.");
+        add_error("Missing runtime parameter: max_frames. Set --max-frames or [perception2d_app].max_frames.");
     }
     else if (options.max_frames == 0 || options.max_frames < -1)
     {
@@ -338,7 +338,7 @@ std::vector<std::string> validate_options(const AppOptions &options)
     {
         if (options.track_max_age == kUnsetInt)
         {
-            add_error("Missing business parameter: track_max_age. Set [perception2d_app].track_max_age.");
+            add_error("Missing runtime parameter: track_max_age. Set [perception2d_app].track_max_age.");
         }
         else
         {
@@ -349,7 +349,7 @@ std::vector<std::string> validate_options(const AppOptions &options)
     {
         if (options.track_output_max_age == kUnsetInt)
         {
-            add_error("Missing business parameter: track_output_max_age. Set [perception2d_app].track_output_max_age.");
+            add_error("Missing runtime parameter: track_output_max_age. Set [perception2d_app].track_output_max_age.");
         }
         else
         {
@@ -360,7 +360,7 @@ std::vector<std::string> validate_options(const AppOptions &options)
     {
         if (options.track_min_hits == kUnsetInt)
         {
-            add_error("Missing business parameter: track_min_hits. Set [perception2d_app].track_min_hits.");
+            add_error("Missing runtime parameter: track_min_hits. Set [perception2d_app].track_min_hits.");
         }
         else
         {
@@ -371,7 +371,7 @@ std::vector<std::string> validate_options(const AppOptions &options)
     {
         if (options.track_iou_threshold == kUnsetFloat)
         {
-            add_error("Missing business parameter: track_iou_threshold. Set [perception2d_app].track_iou_threshold.");
+            add_error("Missing runtime parameter: track_iou_threshold. Set [perception2d_app].track_iou_threshold.");
         }
         else
         {

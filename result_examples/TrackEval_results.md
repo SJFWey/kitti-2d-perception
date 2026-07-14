@@ -1,5 +1,13 @@
 # TrackEval Results
 
+These are archived local outputs for KITTI tracking training sequences 0011,
+0012, and 0013 only. The checkpoint digest, TrackEval revision, and conversion
+script were not preserved. The tables are not reproducible from a clean clone
+and are not official KITTI benchmark or leaderboard results. See
+[the evaluation protocol](../docs/evaluation_protocol.md).
+
+## sort_cpp-car
+
 ### HOTA
 | Sequence | HOTA | DetA | AssA | DetRe | DetPr | AssRe | AssPr | LocA | OWTA | HOTA(0) | LocA(0) | HOTALocA(0) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |

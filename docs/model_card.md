@@ -22,7 +22,7 @@ tracking, visualization, and TrackEval-style reporting.
 | Foreground classes | Car, Pedestrian, Cyclist |
 | Background class | 0 |
 | Default score threshold | 0.8 |
-| Tracker | SORT with IoU matching |
+| Tracker | Class-aware SORT-style tracker with IoU matching |
 
 The class ids used by the app are:
 
@@ -48,21 +48,23 @@ weights/   # PyTorch checkpoints
 models/    # exported ONNX models
 ```
 
-## Evaluation Summary
+## Evaluation Summary And Scope
 
-The repository includes example TrackEval result tables and screenshots under
-`result_examples/`. The headline combined metrics currently shown in the README
-are:
+The repository includes archived TrackEval result tables and screenshots under
+`result_examples/`. The preserved three-sequence subset summary is:
 
 | Split | HOTA | MOTA | IDF1 |
 | --- | ---: | ---: | ---: |
 | Car combined | 82.544 | 91.642 | 90.326 |
 | Pedestrian combined | 69.723 | 77.394 | 85.963 |
 
-These results should be interpreted as a record of this pipeline on selected
-KITTI tracking sequences, not as a broad benchmark claim. Exact reproduction
-requires the same local data, checkpoint, score threshold, tracker settings, and
-TrackEval preparation.
+These results cover only KITTI tracking training sequences 0011, 0012, and
+0013. The exact checkpoint digest, TrackEval revision, and conversion script
+were not preserved, so the tables cannot be reproduced from a clean clone and
+must not be compared with official KITTI leaderboard results. The training
+notebook also uses a custom validation AP implementation rather than the
+official KITTI object-detection metric. See
+[evaluation_protocol.md](evaluation_protocol.md).
 
 ## Known Limitations
 
@@ -75,6 +77,9 @@ TrackEval preparation.
   mAP.
 - SORT uses motion and IoU association only; it does not use appearance
   embeddings, so identity switches can happen in crowded or crossing scenes.
+- This implementation is not a verbatim reproduction of original SORT: it
+  enforces class-consistent matching and uses class-dependent Kalman noise
+  scales. These heuristic settings have not been supported by an ablation.
 - The C++ app currently assumes the exported model contract used by
   `tools_py/export_and_verify.py`.
 
@@ -85,8 +90,7 @@ This model is intended for:
 - Demonstrating a training-to-deployment perception workflow
 - Producing qualitative detection and tracking demos
 - Generating CSV outputs for downstream evaluation
-- Supporting interview discussion around model export, inference, tracking, and
-  reproducibility tradeoffs
+- Studying model export, inference, tracking, and reproducibility tradeoffs
 
 It is not intended for safety-critical perception, autonomous driving deployment,
 or claims of state-of-the-art KITTI performance.
@@ -100,5 +104,6 @@ To reproduce the model path:
 3. Place the checkpoint at `weights/best_model.pth`.
 4. Export with `tools_py/export_and_verify.py`.
 5. Run the C++ app against KITTI tracking image sequences.
-6. Record the exact checkpoint, score threshold, input size, and tracker
-   settings with any reported metrics.
+6. Record the exact checkpoint digest, score threshold, input size, tracker
+   settings, evaluated sequences, TrackEval revision, and conversion command
+   with any newly reported metrics.

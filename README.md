@@ -1,7 +1,8 @@
 # Perception2D
 
 KITTI-style 2D perception pipeline for object detection, C++ ONNX Runtime
-inference, SORT tracking, visualization, CSV export, and TrackEval reporting.
+inference, SORT-style tracking, visualization, CSV export, and evaluation
+experiments.
 
 This is a compact engineering project rather than a production-grade detector.
 The detector is a Faster R-CNN baseline trained in Colab and exported to ONNX;
@@ -11,58 +12,67 @@ weights, and full runtime outputs are intentionally not committed.
 
 ## Demo
 
-The clips below are GIF previews generated from the C++ app output. They show
-detection boxes, SORT track ids, and track tails. MP4 versions are kept as
-smaller source clips for download or local playback.
-
-![Tracking demo 0002](result_examples/gifs/demo_tracking_0002.gif)
-
-[MP4 version](result_examples/videos/demo_tracking_0002.mp4)
+The preview below was generated from the C++ app output. It shows detection
+boxes, track ids, and track tails. The MP4 files are the smaller source clips;
+only one GIF is embedded to keep the repository landing page lightweight.
 
 ![Tracking demo 0011](result_examples/gifs/demo_tracking_0011.gif)
 
-[MP4 version](result_examples/videos/demo_tracking_0011.mp4)
+Additional clips:
 
-![Tracking demo 0013](result_examples/gifs/demo_tracking_0013.gif)
-
-[MP4 version](result_examples/videos/demo_tracking_0013.mp4)
+- [Sequence 0002 (MP4)](result_examples/videos/demo_tracking_0002.mp4)
+- [Sequence 0011 (MP4)](result_examples/videos/demo_tracking_0011.mp4)
+- [Sequence 0013 (MP4)](result_examples/videos/demo_tracking_0013.mp4)
 
 ## What This Project Shows
 
 - Faster R-CNN training workflow in `src_python/train.ipynb`
 - ONNX export and ONNX Runtime consistency check in `tools_py/export_and_verify.py`
-- C++17 inference app using OpenCV, ONNX Runtime, CLI11, and SORT tracking
+- C++17 inference app using OpenCV, ONNX Runtime, CLI11, and a class-aware
+  SORT-style tracker
 - Configurable image-directory inference with detection and tracking CSV output
 - Visualization output for qualitative review
-- TrackEval reporting for selected KITTI tracking sequences
+- Archived TrackEval output for a three-sequence KITTI tracking development
+  subset
 
 Known limitations are documented in [docs/model_card.md](docs/model_card.md).
+The distinction between the custom training metric and the archived tracking
+subset is documented in
+[docs/evaluation_protocol.md](docs/evaluation_protocol.md).
 The model can miss or misclassify small, distant, occluded, and underrepresented
 objects; the videos should be read as a pipeline demo, not as evidence of
 production-level perception accuracy.
 
-## Results
+## Evidence And Archived Results
 
-Training curves:
+Archived training curves from the original local run:
 
 ![Training curves](result_examples/training_curves.png)
 
-TrackEval screenshots:
+The plot's AP values come from the notebook's project-local validation
+implementation. They are not official KITTI object-detection metrics because
+the notebook does not implement KITTI difficulty levels, minimum object
+heights, or `DontCare` handling.
+
+Archived TrackEval screenshots:
 
 | Car tracking | Pedestrian tracking |
 | --- | --- |
 | ![Car TrackEval](result_examples/car_track_eval_result.png) | ![Pedestrian TrackEval](result_examples/pedestrian_track_eval_result.png) |
 
-Summary from `result_examples/TrackEval_results.md`:
+Historical summary from `result_examples/TrackEval_results.md`:
 
 | Split | HOTA | MOTA | IDF1 |
 | --- | ---: | ---: | ---: |
 | Car combined | 82.544 | 91.642 | 90.326 |
 | Pedestrian combined | 69.723 | 77.394 | 85.963 |
 
-These metrics were produced on selected KITTI tracking sequences using the
-exported detector and C++ SORT pipeline. They are useful for comparing this
-pipeline's own runs, but they are not a claim of state-of-the-art model quality.
+These tables cover only training sequences 0011, 0012, and 0013. The exact
+checkpoint digest, TrackEval revision, and conversion script from that older
+run were not preserved, so the numbers are not reproducible from a clean clone
+and must not be treated as official KITTI benchmark or leaderboard results.
+See [the evaluation protocol](docs/evaluation_protocol.md) for the precise
+evidence boundary.
 
 ## Quick Start
 
@@ -105,7 +115,8 @@ cmake --build build -j
 
 ## Data And Model Inputs
 
-The app can process either a single image or a directory of images.
+The app can process either a single image or a directory of images. A sequence
+id is still required because it is used to name outputs and tracking records.
 
 Recommended tracking layout:
 
@@ -233,12 +244,15 @@ data/kitti_detection/
 uv run python -m unittest discover -s tests
 ```
 
-The test suite validates the public config loader and does not require local
-datasets, weights, or private helper scripts.
+The test suite validates the public config loader and repository contracts. It
+does not require local datasets, weights, or third-party inference libraries.
 
 ## Repository Boundaries
 
-- End-to-end reproduction requires external KITTI data and trained weights.
+- Training and inference reproduction requires external KITTI data and a
+  locally trained checkpoint.
+- The archived TrackEval subset cannot be reproduced from the committed files;
+  see [docs/evaluation_protocol.md](docs/evaluation_protocol.md).
 - `torch.load` can execute pickle payloads when unsafe loading is enabled. Use
   `--allow-unsafe-load` only for checkpoints you trust.
 - Generated runtime artifacts are ignored by Git: `data/`, `weights/`,
